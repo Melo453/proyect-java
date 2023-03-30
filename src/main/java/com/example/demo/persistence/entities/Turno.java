@@ -16,18 +16,17 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="turno")
 public class Turno {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer Id;
+    private Integer id;
     private LocalDate fechaTurno;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "odontologo_id")
+    @ManyToOne
+    @JoinColumn(name = "odontologo_id", referencedColumnName = "id")
     private Odontologo odontologo;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "paciente_id")
+    @ManyToOne
+    @JoinColumn(name = "paciente_id", referencedColumnName = "id")
     private Paciente paciente;
 
 //    @CreationTimestamp

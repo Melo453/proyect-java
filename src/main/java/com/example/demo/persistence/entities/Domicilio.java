@@ -13,7 +13,6 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "domicilio")
 public class Domicilio {
 
     @Id

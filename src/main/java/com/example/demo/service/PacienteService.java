@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.persistence.entities.Paciente;
+import com.example.demo.persistence.entities.Turno;
 import com.example.demo.persistence.repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

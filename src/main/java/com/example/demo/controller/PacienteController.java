@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.persistence.entities.Paciente;
+import com.example.demo.persistence.entities.Turno;
 import com.example.demo.service.PacienteService;
+import com.example.demo.service.TurnoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,8 @@ public class PacienteController {
 
     @Autowired
     private PacienteService pacienteService;
+    @Autowired
+    private TurnoService turnoService;
 
     @GetMapping()
     public ResponseEntity<List<Paciente>> buscarTodos() {
@@ -35,6 +39,14 @@ public class PacienteController {
     public Optional<Paciente> buscarPaciente(@PathVariable("id") Integer id) {
         return this.pacienteService.buscar(id);
     }
+
+    @GetMapping(path = "/turno/{id}")
+    public List<Turno> obtenerTurnosPorPaciente(@PathVariable("id") Integer id) {
+        Optional<Paciente> paciente = pacienteService.buscar(id);
+        List<Turno> turnos = turnoService.buscarPorPaciente(paciente);
+        return turnos;
+    }
+
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) {

@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
+import com.example.demo.persistence.entities.Odontologo;
 import com.example.demo.persistence.entities.Paciente;
 import com.example.demo.persistence.entities.Turno;
-import com.example.demo.persistence.repository.OdontologoRepository;
 import com.example.demo.persistence.repository.TurnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,14 @@ public class TurnoService {
 
     public List<Turno> buscarTodos(){
         return turnoRepository.findAll();
+    }
+
+    public List<Turno> buscarPorPaciente(Optional<Paciente> paciente) {
+        return turnoRepository.findByPaciente(paciente);
+    }
+
+    public List<Turno> buscarPorOdontolgoo(Optional<Odontologo> odontologo) {
+        return turnoRepository.findByOdontologo(odontologo);
     }
 
     public boolean eliminar(Integer id){
