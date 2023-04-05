@@ -7,6 +7,7 @@ import com.example.demo.persistence.repository.TurnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,9 @@ public class TurnoService {
         return turnoRepository.findById(id);
     }
 
+    public List<Turno> buscarPorFecha(LocalDate fecha) {
+        return turnoRepository.findByFechaTurno(fecha);
+    }
     public List<Turno> buscarTodos(){
         return turnoRepository.findAll();
     }

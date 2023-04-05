@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Pacientes</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/get_pacientes.js"></script>
+</head>
+<body>
+<div class="container">
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link" href="/">Agregar nuevo</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/pacientes.html">Pacientes</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/odontologos.html">Odontologos</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/turnos.html">Turnos</a>
+        </li>
+    </ul>
+
+    <div id="div_paciente_table">
+        <h1>Pacientes</h1>
+        <div class="row col-md-12 table-responsive">
+            <table id="pacientesTable" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>DNI</th>
+                    <th>Fecha ingreso</th>
+                    <th>Calle</th>
+                    <th>Numero</th>
+                    <th>localidad</th>
+                    <th>provincia</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

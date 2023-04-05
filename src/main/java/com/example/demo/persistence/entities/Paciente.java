@@ -27,7 +27,6 @@ public class Paciente {
 
     private Integer dni;
 
-    @CreationTimestamp
     private LocalDate fechaingreso;
 
     @OneToOne(cascade = CascadeType.ALL)

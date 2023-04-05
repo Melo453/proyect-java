@@ -13,22 +13,32 @@ import java.util.Optional;
 public class OdontologoService {
 
     @Autowired
-    OdontologoRepository odontologoService;
+    OdontologoRepository odontologoRepository;
     public Odontologo save(Odontologo odontologo) {
-        return odontologoService.save(odontologo);
+        return odontologoRepository.save(odontologo);
     }
 
     public Optional<Odontologo> buscar(Integer id) {
-        return odontologoService.findById(id);
+        return odontologoRepository.findById(id);
+    }
+
+
+    public Optional<Odontologo> buscarPorMatricula(Integer matricula) {
+        List<Odontologo> odontologos = odontologoRepository.findByMatricula(matricula);
+        if (odontologos.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(odontologos.get(0));
+        }
     }
 
     public List<Odontologo> buscarTodos(){
-        return odontologoService.findAll();
+        return odontologoRepository.findAll();
     }
 
     public boolean eliminar(Integer id){
         try {
-            odontologoService.deleteById(id);
+            odontologoRepository.deleteById(id);
             return true;
         }catch (Exception e){
             return false;

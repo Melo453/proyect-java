@@ -24,7 +24,7 @@ public class Odontologo {
     private Integer id;
     private String nombre;
     private String apellido;
-    private String matricula;
+    private Integer matricula;
 
     @OneToMany(mappedBy = "odontologo")
     @JsonIgnore

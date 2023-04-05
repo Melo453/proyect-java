@@ -29,12 +29,23 @@ public class TurnoController {
     public ResponseEntity<List<Turno>> buscarTodos() {
         return ResponseEntity.ok(turnoService.buscarTodos());
     }
+
+    //verificar que si intento agregar 2 veces el mismo odontologo y paciente me tire que ya existe el turno con ese odontologo y paciente
     @PostMapping("/crear")
     public ResponseEntity<String> registrarTurno(@RequestBody Turno turno) {
         ResponseEntity<String> respuesta = null;
 
         if (turno == null) {
             respuesta = ResponseEntity.badRequest().body("El objeto turno no puede ser nulo");
+            return respuesta;
+        }else if( turno.getFechaTurno() == null){
+            respuesta = ResponseEntity.badRequest().body("La fecha del turno no puede ser nula");
+            return respuesta;
+        }else if( turno.getPaciente() == null){
+            respuesta = ResponseEntity.badRequest().body("El paciente no puede ser nulo");
+            return respuesta;
+        }else if( turno.getOdontologo() == null){
+            respuesta = ResponseEntity.badRequest().body("El odontologo no puede ser nulo");
             return respuesta;
         }
 
@@ -45,6 +56,15 @@ public class TurnoController {
             respuesta = ResponseEntity.badRequest().body("El turno no se pudo registrar, paciente u odontologo no existen");
             return respuesta;
         }
+        List<Turno> turnosRepetidos = turnoService.buscarTodos();
+
+        for (Turno t : turnosRepetidos) {
+            if (t.getOdontologo().getId().equals(turno.getOdontologo().getId()) && t.getPaciente().getId().equals(turno.getPaciente().getId())) {
+                respuesta = ResponseEntity.badRequest().body("Ya existe un turno para el odontologo ese odontologo junto a ese paciente");
+                return respuesta;
+            }
+        }
+
 
         // Verificar la disponibilidad de la fecha del turno
         List<Turno> turnos = turnoService.buscarTodos();
@@ -57,7 +77,7 @@ public class TurnoController {
 
         // Guardar el turno y responder con éxito
         Turno turnoGuardado = turnoService.save(turno);
-        respuesta = ResponseEntity.ok("Turno registrado: " + turnoGuardado.toString());
+        respuesta = ResponseEntity.ok("Turno registrado para la fecha " + turnoGuardado.getFechaTurno() + " con éxito" );
         return respuesta;
     }
 
@@ -67,11 +87,12 @@ public class TurnoController {
     }
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) {
-        boolean ok = this.turnoService.eliminar(id);
-        if (turnoService.eliminar(id)) {
-            return ResponseEntity.ok("turno eliminado");
-        }else {
-            return ResponseEntity.internalServerError().body("Ooops");
+        Optional<Turno> turnoExistente = turnoService.buscar(id);
+        if (turnoExistente.isPresent()) {
+            this.turnoService.eliminar(id);
+            return ResponseEntity.ok("Turno eliminado");
+        } else {
+            return ResponseEntity.badRequest().body("No se puede eliminar un turno no existente");
         }
     }
 }

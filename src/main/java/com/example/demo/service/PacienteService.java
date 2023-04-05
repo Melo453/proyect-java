@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.persistence.entities.Odontologo;
 import com.example.demo.persistence.entities.Paciente;
 import com.example.demo.persistence.entities.Turno;
 import com.example.demo.persistence.repository.PacienteRepository;
@@ -23,6 +24,15 @@ public class PacienteService {
 
     public List<Paciente> buscarTodos(){
         return pacienteRepository.findAll();
+    }
+
+    public Optional<Paciente> buscarPorDni(Integer dni) {
+        List<Paciente> odontologos = pacienteRepository.findByDni(dni);
+        if (odontologos.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(odontologos.get(0));
+        }
     }
 
     public boolean eliminar(Integer id){
