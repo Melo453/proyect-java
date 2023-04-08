@@ -1,11 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.persistence.entities.Odontologo;
 import com.example.demo.persistence.entities.Paciente;
 import com.example.demo.persistence.entities.Turno;
 import com.example.demo.service.PacienteService;
 import com.example.demo.service.TurnoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +23,11 @@ public class PacienteController {
     private TurnoService turnoService;
 
     @GetMapping()
-    public ResponseEntity<List<Paciente>> buscarTodos() {
+    public ResponseEntity<List<Paciente>> buscarTodos() throws BadRequestException {
         return ResponseEntity.ok(pacienteService.buscarTodos());
     }
     @PostMapping("/crear")
-    public ResponseEntity<String> registrarPaciente(@RequestBody Paciente paciente) {
+    public ResponseEntity<String> registrarPaciente(@RequestBody Paciente paciente) throws BadRequestException {
         ResponseEntity<String> respuesta = null;
 
         if (paciente == null) {
@@ -63,7 +65,7 @@ public class PacienteController {
     }
 
     @GetMapping(path = "/{id}")
-    public Optional<Paciente> buscarPaciente(@PathVariable("id") Integer id, Paciente paciente) {
+    public Optional<Paciente> buscarPaciente(@PathVariable("id") Integer id, Paciente paciente) throws BadRequestException{
 
         if (paciente.getId() == null) {
             ResponseEntity.badRequest().body("Este paciente no existe");
@@ -72,7 +74,7 @@ public class PacienteController {
     }
 
     @GetMapping(path = "/turno/{id}")
-    public List<Turno> obtenerTurnosPorPaciente(@PathVariable("id") Integer id) {
+    public List<Turno> obtenerTurnosPorPaciente(@PathVariable("id") Integer id) throws BadRequestException {
         Optional<Paciente> paciente = pacienteService.buscar(id);
         List<Turno> turnos = turnoService.buscarPorPaciente(paciente);
         return turnos;
@@ -80,7 +82,7 @@ public class PacienteController {
 
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) {
+    public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) throws BadRequestException {
         Optional<Paciente> pacienteExistente = pacienteService.buscar(id);
         if (pacienteExistente.isPresent()) {
             this.pacienteService.eliminar(id);
@@ -88,6 +90,23 @@ public class PacienteController {
         } else {
             return ResponseEntity.badRequest().body("No se puede eliminar un paciente no existente");
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarPaciente(@PathVariable Integer id, @RequestBody Paciente paciente) throws BadRequestException {
+        Optional<Paciente> pacienteExistente = pacienteService.buscar(id);
+        if (pacienteExistente.isPresent()) {
+            paciente.setId(id);
+            Paciente pacienteActualizado = pacienteService.actualizarPaciente(paciente);
+            return ResponseEntity.ok("Paciente actualizado");
+        } else {
+            return ResponseEntity.badRequest().body("No se puede actualizar un paciente no existente");
+        }
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<String> procesarError(BadRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
 }

@@ -28,7 +28,7 @@
                 //de llamar a la API para eliminar al odontologo
                 const deleteButton = '<button' +
                     ' id=' + '\"' + 'btn_delete_' + odontologo.id + '\"' +
-                    ' type="button" onclick="deleteBy('+odontologo.id+')" class="btn btn-danger btn_delete">' +
+                    ' type="button" onclick="deleteByOdontologo('+odontologo.id+')" class="btn btn-danger btn_delete">' +
                     '&times' +
                     '</button>';
 

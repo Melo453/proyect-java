@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.persistence.entities.Odontologo;
 import com.example.demo.persistence.entities.Paciente;
 import com.example.demo.persistence.entities.Turno;
@@ -7,6 +8,7 @@ import com.example.demo.service.OdontologoService;
 import com.example.demo.service.PacienteService;
 import com.example.demo.service.TurnoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,11 +23,11 @@ public class OdontologoController {
     private TurnoService turnoService;
 
     @GetMapping()
-    public ResponseEntity<List<Odontologo>> buscarTodos() {
+    public ResponseEntity<List<Odontologo>> buscarTodos() throws BadRequestException {
         return ResponseEntity.ok(odontologoService.buscarTodos());
     }
     @PostMapping("/crear")
-    public ResponseEntity<String> registrarOdontologo(@RequestBody Odontologo odontologo) {
+    public ResponseEntity<String> registrarOdontologo(@RequestBody Odontologo odontologo) throws BadRequestException {
         ResponseEntity<String> respuesta = null;
         if (odontologo == null){
             respuesta = ResponseEntity.badRequest().body("Datos obligatorios faltantes: El objeto odontologo esta vacio");
@@ -50,19 +52,19 @@ public class OdontologoController {
     }
 
     @GetMapping(path = "/{id}")
-    public Optional<Odontologo> buscarOdontologo(@PathVariable("id") Integer id) {
+    public Optional<Odontologo> buscarOdontologo(@PathVariable("id") Integer id) throws BadRequestException{
         return this.odontologoService.buscar(id);
     }
 
     @GetMapping(path = "/turno/{id}")
-    public List<Turno> obtenerTurnosPorPaciente(@PathVariable("id") Integer id) {
+    public List<Turno> obtenerTurnosPorPaciente(@PathVariable("id") Integer id) throws BadRequestException{
         Optional<Odontologo> odontologo = odontologoService.buscar(id);
         List<Turno> turnos = turnoService.buscarPorOdontolgoo(odontologo);
         return turnos;
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) {
+    public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) throws BadRequestException{
         Optional<Odontologo> odontologoExistente = odontologoService.buscar(id);
         if (odontologoExistente.isPresent()) {
             this.odontologoService.eliminar(id);
@@ -70,6 +72,23 @@ public class OdontologoController {
         } else {
             return ResponseEntity.badRequest().body("No se puede eliminar un odontólogo no existente");
         }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarOdontologo(@PathVariable Integer id, @RequestBody Odontologo odontologo) throws BadRequestException{
+        Optional<Odontologo> odontologoExistente = odontologoService.buscar(id);
+        if (odontologoExistente.isPresent()) {
+            odontologo.setId(id);
+            Odontologo odontologoActualizado = odontologoService.actualizarOdontologo(odontologo);
+            return ResponseEntity.ok("Odontólogo actualizado");
+        } else {
+            return ResponseEntity.badRequest().body("No se puede actualizar un odontólogo no existente");
+        }
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<String> procesarError(BadRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.persistence.entities.Odontologo;
 import com.example.demo.persistence.entities.Paciente;
 import com.example.demo.persistence.entities.Turno;
@@ -7,6 +8,7 @@ import com.example.demo.service.OdontologoService;
 import com.example.demo.service.PacienteService;
 import com.example.demo.service.TurnoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,13 +28,13 @@ public class TurnoController {
 
 
     @GetMapping()
-    public ResponseEntity<List<Turno>> buscarTodos() {
+    public ResponseEntity<List<Turno>> buscarTodos() throws BadRequestException {
         return ResponseEntity.ok(turnoService.buscarTodos());
     }
 
     //verificar que si intento agregar 2 veces el mismo odontologo y paciente me tire que ya existe el turno con ese odontologo y paciente
     @PostMapping("/crear")
-    public ResponseEntity<String> registrarTurno(@RequestBody Turno turno) {
+    public ResponseEntity<String> registrarTurno(@RequestBody Turno turno) throws BadRequestException{
         ResponseEntity<String> respuesta = null;
 
         if (turno == null) {
@@ -57,22 +59,27 @@ public class TurnoController {
             return respuesta;
         }
         List<Turno> turnosRepetidos = turnoService.buscarTodos();
-
-        for (Turno t : turnosRepetidos) {
-            if (t.getOdontologo().getId().equals(turno.getOdontologo().getId()) && t.getPaciente().getId().equals(turno.getPaciente().getId())) {
-                respuesta = ResponseEntity.badRequest().body("Ya existe un turno para el odontologo ese odontologo junto a ese paciente");
-                return respuesta;
+        if (turnosRepetidos != null){
+            for (Turno t : turnosRepetidos) {
+                if (t.getOdontologo().getId().equals(turno.getOdontologo().getId()) && t.getPaciente().getId().equals(turno.getPaciente().getId())) {
+                    respuesta = ResponseEntity.badRequest().body("Ya existe un turno para el odontologo ese odontologo junto a ese paciente");
+                    return respuesta;
+                }
             }
+
         }
 
 
         // Verificar la disponibilidad de la fecha del turno
         List<Turno> turnos = turnoService.buscarTodos();
-        for (Turno t : turnos) {
-            if (t.getFechaTurno().equals(turno.getFechaTurno())) {
-                respuesta = ResponseEntity.badRequest().body("Ya existe un turno para la fecha : " + turno.getFechaTurno());
-                return respuesta;
+        if (turnos != null){
+            for (Turno t : turnos) {
+                if (t.getFechaTurno().equals(turno.getFechaTurno())) {
+                    respuesta = ResponseEntity.badRequest().body("Ya existe un turno para la fecha : " + turno.getFechaTurno());
+                    return respuesta;
+                }
             }
+
         }
 
         // Guardar el turno y responder con éxito
@@ -82,11 +89,11 @@ public class TurnoController {
     }
 
     @GetMapping(path = "/{id}")
-    public Optional<Turno> buscarTurno(@PathVariable("id") Integer id) {
+    public Optional<Turno> buscarTurno(@PathVariable("id") Integer id) throws BadRequestException {
         return this.turnoService.buscar(id);
     }
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) {
+    public ResponseEntity<String> eliminar(@PathVariable("id") Integer id) throws BadRequestException{
         Optional<Turno> turnoExistente = turnoService.buscar(id);
         if (turnoExistente.isPresent()) {
             this.turnoService.eliminar(id);
@@ -95,4 +102,22 @@ public class TurnoController {
             return ResponseEntity.badRequest().body("No se puede eliminar un turno no existente");
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> actualizarTurno(@PathVariable Integer id, @RequestBody Turno turno)throws BadRequestException {
+        Optional<Turno> turnoExistente = turnoService.buscar(id);
+        if (turnoExistente.isPresent()) {
+            turno.setId(id);
+            Turno turnoActualizado = turnoService.actualizarTurno(turno);
+            return ResponseEntity.ok("Turno actualizado");
+        } else {
+            return ResponseEntity.badRequest().body("No se puede actualizar un turno no existente");
+        }
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<String> procesarError(BadRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
 }

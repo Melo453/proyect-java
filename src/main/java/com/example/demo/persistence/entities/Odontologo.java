@@ -1,12 +1,12 @@
 package com.example.demo.persistence.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,4 +29,10 @@ public class Odontologo {
     @OneToMany(mappedBy = "odontologo")
     @JsonIgnore
     private List<Turno> turnos = new ArrayList<>();
+
+    public Odontologo(String nombre, String apellido, Integer matricula) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.matricula = matricula;
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.demo.persistence.entities;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -29,6 +29,11 @@ public class Turno {
     @JoinColumn(name = "paciente_id", referencedColumnName = "id")
     private Paciente paciente;
 
+    public Turno(LocalDate fechaTurno, Odontologo odontologo, Paciente paciente) {
+        this.fechaTurno = fechaTurno;
+        this.odontologo = odontologo;
+        this.paciente = paciente;
+    }
 //    @CreationTimestamp
 //    private LocalDate fechaAltaTurno;
 

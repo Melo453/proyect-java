@@ -37,7 +37,7 @@
                 //modificar y mostrar los datos del mismo en un formulario.
                 const updateButton = '<button' +
                     ' id=' + '\"' + 'btn_id_' + turno.id + '\"' +
-                    ' type="button" onclick="findBy('+turno.id+')" class="btn btn-info btn_id">' +
+                    ' type="button" onclick="findByTurno('+turno.id+')" class="btn btn-info btn_id">' +
                     turno.id +
                     '</button>';
 

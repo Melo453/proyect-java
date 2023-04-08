@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.persistence.entities.Odontologo;
 import com.example.demo.persistence.entities.Paciente;
 import com.example.demo.persistence.entities.Turno;
@@ -14,15 +15,26 @@ import java.util.Optional;
 public class PacienteService {
     @Autowired
     PacienteRepository pacienteRepository;
-    public Paciente save(Paciente paciente) {
+    public Paciente save(Paciente paciente) throws BadRequestException {
+        if (paciente == null){
+            throw new BadRequestException("El paciente no puede ser nulo");
+        }
         return pacienteRepository.save(paciente);
     }
 
-    public Optional<Paciente> buscar(Integer id) {
+    public Optional<Paciente> buscar(Integer id) throws BadRequestException {
+        Optional<Paciente> pacientes = pacienteRepository.findById(id);
+        if (pacientes.isEmpty()){
+            throw new BadRequestException("El paciente no existe");
+        }
         return pacienteRepository.findById(id);
     }
 
-    public List<Paciente> buscarTodos(){
+    public List<Paciente> buscarTodos() throws BadRequestException{
+        List<Paciente> pacientes = pacienteRepository.findAll();
+        if (pacientes.isEmpty()) {
+            throw new BadRequestException("No se encontraron pacientes");
+        }
         return pacienteRepository.findAll();
     }
 
@@ -35,22 +47,22 @@ public class PacienteService {
         }
     }
 
-    public boolean eliminar(Integer id){
-        try {
+    public boolean eliminar(Integer id) throws BadRequestException{
+        Optional<Paciente> pacienteExistente = buscar(id);
+
+        if(!pacienteExistente.isPresent()){
+            throw new BadRequestException("No existe el paciente con id " + id);
+        }
             pacienteRepository.deleteById(id);
             return true;
-        }catch (Exception e){
-            return false;
-        }
     }
 
-    public Paciente actualizar(Integer id,Paciente pacienteUpdate){
-        Paciente paciente = pacienteRepository.findById(id).orElseThrow();
-        paciente.setNombre(pacienteUpdate.getNombre());
-        paciente.setApellido(pacienteUpdate.getApellido());
-        paciente.setDni(pacienteUpdate.getDni());
-        paciente.setFechaingreso(pacienteUpdate.getFechaingreso());
-        paciente.setDomicilio(pacienteUpdate.getDomicilio());
-        return pacienteRepository.save(paciente);
+    public Paciente actualizarPaciente(Paciente pacienteActualizado) throws BadRequestException {
+        Optional<Paciente> pacienteExistente = pacienteRepository.findById(pacienteActualizado.getId());
+        if (!pacienteExistente.isPresent()) {
+            throw new BadRequestException("No existe este paciente");
+
+        }
+            return pacienteRepository.save(pacienteActualizado);
     }
 }

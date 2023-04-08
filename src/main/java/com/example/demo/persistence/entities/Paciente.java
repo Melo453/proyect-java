@@ -2,11 +2,11 @@ package com.example.demo.persistence.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -15,7 +15,6 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Paciente {
 
     @Id
@@ -37,4 +36,11 @@ public class Paciente {
     @JsonIgnore
     private List<Turno> turnos = new ArrayList<>(); ;
 
+    public Paciente(String nombre, String apellido, Integer dni, LocalDate fechaingreso, Domicilio domicilio) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.dni = dni;
+        this.fechaingreso = fechaingreso;
+        this.domicilio = domicilio;
+    }
 }
